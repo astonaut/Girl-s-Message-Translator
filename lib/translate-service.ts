@@ -66,7 +66,7 @@ export async function translateMessage(message: string): Promise<string[]> {
     // Parse the numbered list response into an array
     const translations = content
       .split(/\d+\.\s+/)  // Split by numbered list format
-      .filter(item => item.trim().length > 0);  // Remove empty items
+      .filter((item: string) => item.trim().length > 0);  // Remove empty items
     
     // Return exactly 3 translations, or fill with placeholders if fewer
     const results = translations.slice(0, 3);
@@ -115,7 +115,7 @@ export async function getBestReplies(message: string): Promise<string[]> {
     // Parse the numbered list response into an array
     const replies = content
       .split(/\d+\.\s+/)  // Split by numbered list format
-      .filter(item => item.trim().length > 0);  // Remove empty items
+      .filter((item: string) => item.trim().length > 0);  // Remove empty items
     
     // Return exactly 3 replies, or fill with placeholders if fewer
     const results = replies.slice(0, 3);
