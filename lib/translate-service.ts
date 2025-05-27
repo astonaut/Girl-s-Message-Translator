@@ -1,7 +1,4 @@
-"use client";
-
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const API_KEY = "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";
 
 // Prompt to instruct the model how to respond
 const SYSTEM_PROMPT = `你是一个专业的女友消息分析师，你擅长分析女性在对话中隐藏的真实意图。
@@ -34,25 +31,14 @@ const REPLY_SYSTEM_PROMPT = `你是一个感情专家，擅长给出恰当的回
 
 export async function translateMessage(message: string): Promise<string[]> {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch("/api/translate", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": window.location.origin
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
-        messages: [
-          {
-            role: "system",
-            content: SYSTEM_PROMPT
-          },
-          {
-            role: "user",
-            content: `女友发的消息：${message}\n请分析这条消息可能的真实含义`
-          }
-        ]
+        message,
+        type: "translate"
       })
     });
 
@@ -61,20 +47,7 @@ export async function translateMessage(message: string): Promise<string[]> {
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content || "";
-    
-    // Parse the numbered list response into an array
-    const translations = content
-      .split(/\d+\.\s+/)  // Split by numbered list format
-      .filter((item: string) => item.trim().length > 0);  // Remove empty items
-    
-    // Return exactly 3 translations, or fill with placeholders if fewer
-    const results = translations.slice(0, 3);
-    while (results.length < 3) {
-      results.push("无法解读这条消息，请提供更多上下文");
-    }
-    
-    return results;
+    return data.results || [];
   } catch (error) {
     console.error("Translation API error:", error);
     throw new Error("Failed to translate message");
@@ -83,25 +56,14 @@ export async function translateMessage(message: string): Promise<string[]> {
 
 export async function getBestReplies(message: string): Promise<string[]> {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch("/api/translate", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": window.location.origin
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
-        messages: [
-          {
-            role: "system",
-            content: REPLY_SYSTEM_PROMPT
-          },
-          {
-            role: "user",
-            content: `女友发的消息：${message}\n请给出合适的回复建议`
-          }
-        ]
+        message,
+        type: "reply"
       })
     });
 
@@ -110,20 +72,7 @@ export async function getBestReplies(message: string): Promise<string[]> {
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content || "";
-    
-    // Parse the numbered list response into an array
-    const replies = content
-      .split(/\d+\.\s+/)  // Split by numbered list format
-      .filter((item: string) => item.trim().length > 0);  // Remove empty items
-    
-    // Return exactly 3 replies, or fill with placeholders if fewer
-    const results = replies.slice(0, 3);
-    while (results.length < 3) {
-      results.push("抱歉，无法生成合适的回复建议");
-    }
-    
-    return results;
+    return data.results || [];
   } catch (error) {
     console.error("Best replies API error:", error);
     throw new Error("Failed to get best replies");
