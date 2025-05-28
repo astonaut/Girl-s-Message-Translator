@@ -83,5 +83,22 @@
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* 优化滚动行为 */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
+/* 减少滚动敏感度 */
+* {
+  scroll-behavior: smooth;
+}
+
+/* 优化触摸滚动 */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
